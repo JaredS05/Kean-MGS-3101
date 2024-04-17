@@ -1,0 +1,98 @@
+---
+title: "Descriptive Analysis Project"
+author: "Jared Sheridan"
+date: "`r Sys.Date()`"
+output: 
+  prettydoc::html_pretty:
+    theme: leonids
+    toc: yes
+    
+---
+
+# Descriptive Analytics Project Instructions
+
+## Objective
+The objective of this analysis is to analyze the test scores of students across 3 types of tests and what ascpects of thier lives have the buggest effect on overall score.
+
+## Project Requirements
+
+### 1. Dataset Selection
+- The dataset I selected for this project is titled Student Study Performance. This dataset shows the correlation between a student's performance (test scores) and other variables such as Gender, Ethnicity, Parental level of Education, Lunch, and Test preparation. The link for this dataset is: https://www.kaggle.com/datasets/bhavikjikadara/student-study-performance. 
+
+```{r selection, echo=TRUE}
+student_data <- read.csv("study_performance.csv")
+
+head(student_data)
+
+library(vioplot)
+
+```
+
+
+### 2. Data Cleaning
+- The dataset used in this analysis had zero null values, no extreme outliers, and no really significant discrepencies. The code below shows all blank values and outlines all significant values within the dataset.
+
+```{r cleaning, echo=TRUE}
+
+summary(student_data)
+
+colSums(is.na(student_data))
+
+```
+
+
+
+### 3. Data Handling
+- The following data has been identified and transformed into values better suited for analysis.
+
+```{r handling, echo=TRUE}
+str(student_data)
+
+student_data$gender <- as.numeric(factor(student_data$gender)) - 1
+
+student_data$lunch <- as.numeric(factor(student_data$lunch)) - 1
+
+student_data$test_preparation_course <- as.numeric(factor(student_data$test_preparation_course)) - 1
+
+student_data$parental_level_of_education <- as.numeric(factor(student_data$parental_level_of_education)) - 1
+
+student_data$race_ethnicity <- as.numeric(factor(student_data$race_ethnicity)) - 1
+
+average_score <- mean(student_data$math_score + student_data$reading_score + student_data$writing_score)
+
+summary(student_data)
+
+```
+
+
+
+### 4. Descriptive Analysis
+- The following histograms show the spread of test scores across the three tests. The violin plot shows how students who completed the test preparation course had higher combined scores than those that did not complete the preparation course. Listed below the visuals are the correlation models which show what aspects of the students have the highest effect on test scores. 
+
+```{r descriptive, echo=TRUE}
+
+math_hist <- hist(student_data$math_score, ylab = "Score Frequency", xlab = "Math Score", 
+                  col = "green")
+
+read_hist <- hist(student_data$reading_score, ylab = "Score Frequency", xlab = "Reading Score", 
+                  col = "red")
+
+write_hist <- hist(student_data$writing_score, ylab = "Score Frequency", xlab = "Writing Score", 
+                   col = "yellow")
+
+
+vioplot(math_score + reading_score + writing_score ~ test_preparation_course, data = student_data, 
+        ylab = "Combined Test Score", xlab = "Test Preparation Course Completion",
+        col = "lightblue")
+
+cmodel <- lm(math_score + reading_score + writing_score ~ gender + race_ethnicity + parental_level_of_education +  lunch + test_preparation_course, data=student_data)
+cmodel
+
+cor_matrix <-  cor(student_data)
+cor_matrix
+
+```
+
+
+## Resources
+- https://www.kaggle.com/datasets/bhavikjikadara/student-study-performance. 
